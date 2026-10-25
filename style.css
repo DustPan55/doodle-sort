@@ -245,3 +245,29 @@ li { margin-bottom: 8px; }
 .fieldHead .tip { margin: 0; }
 .levels { justify-content: space-between; }
 .levels button { flex: 1; font-size: 18px; padding: 8px 0; }
+
+/* Voice picker */
+.voiceRow { gap: 10px; }
+.voiceRow select {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  font-size: 15px;
+  color: inherit;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 2px solid var(--btn-edge);
+  background: var(--btn);
+}
+.small {
+  flex: 0 0 auto;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 2px solid var(--btn-edge);
+  background: var(--btn);
+}
+.voiceHelp { margin: 4px 0 8px; font-size: 14px; }
+.voiceHelp summary { font-size: 14px; padding: 6px 0; }
+.voiceHelp p { margin: 4px 0; color: var(--muted); }

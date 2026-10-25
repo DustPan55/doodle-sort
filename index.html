@@ -58,6 +58,14 @@
       <label class="row"><span>Level up by itself after 3 wins</span><input type="checkbox" id="optAuto"></label>
       <label class="row"><span>Sounds</span><input type="checkbox" id="optSound"></label>
       <label class="row"><span>Say shape names</span><input type="checkbox" id="optVoice"></label>
+      <div class="row voiceRow">
+        <select id="optVoiceName" aria-label="Voice"></select>
+        <button id="testVoice" class="small">▶ Test</button>
+      </div>
+      <details class="voiceHelp">
+        <summary>Voice sounds robotic?</summary>
+        <p>Download a more natural voice (free): open <b>Settings → Accessibility → Spoken Content → Voices → English</b> and download one marked <b>Enhanced</b> or <b>Premium</b>. Ava, Zoe and Evan are good choices. Then reopen this app; it picks the best voice by itself, or you can choose one above.</p>
+      </details>
       <div class="row">
         <span>Theme</span>
         <div id="optTheme" class="segmented" role="group" aria-label="Theme">

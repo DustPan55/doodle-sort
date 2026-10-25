@@ -2,7 +2,7 @@
 
 // ---------- Config ----------
 
-const APP_VERSION = '1.0.0'; // keep in step with sw.js; ./bump.sh does both
+const APP_VERSION = '1.1.0'; // keep in step with sw.js; ./bump.sh does both
 
 const COLORS = [
   { name: 'red', hex: '#FF4D4D', dark: '#C92A2A' },
@@ -42,7 +42,7 @@ let theme = THEMES.light;
 
 const DEFAULTS = {
   sound: true, voice: true, seenIntro: false, theme: 'auto',
-  level: 1, autoLevel: false, totalSorted: 0,
+  level: 1, autoLevel: false, totalSorted: 0, voiceURI: '',
 };
 const settings = loadSettings();
 
@@ -621,6 +621,46 @@ function playWin() {
   [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => tone(f, t + i * 0.11, 0.35, 0.22, 'triangle'));
 }
 
+// Use the most natural English voice on the phone. iOS's built-in "compact" voices sound
+// robotic; Enhanced and Premium voices (free downloads in Settings) sound far better and
+// show up here once installed. Siri's own voices aren't available to web pages.
+const NICE_VOICES = ['Ava', 'Zoe', 'Evan', 'Nathan', 'Allison', 'Susan', 'Tom', 'Samantha',
+  'Serena', 'Daniel', 'Karen', 'Moira', 'Google US English'];
+const NOVELTY_VOICE = /speech\.synthesis\.voice|Albert|Bad News|Bahh|Bells|Boing|Bubbles|Cellos|Good News|Jester|Organ|Superstar|Trinoids|Whisper|Wobble|Zarvox/i;
+let voices = [];
+
+function voiceScore(v) {
+  const id = `${v.voiceURI} ${v.name}`;
+  let s = 0;
+  if (/premium/i.test(id)) s += 30;
+  else if (/enhanced|neural|natural/i.test(id)) s += 20;
+  const i = NICE_VOICES.findIndex((n) => v.name.startsWith(n));
+  if (i >= 0) s += 10 - i * 0.5;
+  if (v.lang.replace('_', '-').toLowerCase() === (navigator.language || '').toLowerCase()) s += 3;
+  if (/eloquence/i.test(id)) s -= 10; // Eddy, Flo, Reed...: clear but robotic
+  if (NOVELTY_VOICE.test(id)) s -= 100;
+  return s;
+}
+
+function loadVoices() {
+  if (!('speechSynthesis' in window)) return;
+  voices = speechSynthesis.getVoices()
+    .filter((v) => /^en/i.test(v.lang) && !NOVELTY_VOICE.test(`${v.voiceURI} ${v.name}`))
+    .sort((a, b) => voiceScore(b) - voiceScore(a));
+  renderVoicePicker();
+}
+
+const currentVoice = () => voices.find((v) => v.voiceURI === settings.voiceURI) || voices[0] || null;
+
+function voiceLabel(v) {
+  const q = /premium/i.test(v.voiceURI) ? 'Premium' : /enhanced/i.test(v.voiceURI) ? 'Enhanced' : '';
+  const name = q && !v.name.includes(q) ? `${v.name} (${q})` : v.name;
+  const lang = v.lang.replace('_', '-');
+  return lang.toLowerCase() === (navigator.language || '').toLowerCase() ? name : `${name} · ${lang}`; // only show an unusual accent
+}
+
+if ('speechSynthesis' in window) speechSynthesis.addEventListener('voiceschanged', loadVoices);
+
 let lastSpoken = 0;
 
 function say(text, force) {
@@ -630,8 +670,10 @@ function say(text, force) {
   lastSpoken = t;
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
-  u.rate = 0.9;
-  u.pitch = 1.3;
+  const v = currentVoice();
+  if (v) { u.voice = v; u.lang = v.lang; }
+  u.rate = 0.95;
+  u.pitch = 1.05; // a touch bright for kids; higher starts to sound like a chipmunk
   speechSynthesis.speak(u);
 }
 
@@ -690,6 +732,7 @@ function openParent() {
   hold.classList.remove('holding');
   $('optSound').checked = settings.sound;
   $('optVoice').checked = settings.voice;
+  loadVoices();
   $('optAuto').checked = settings.autoLevel;
   $('totalSorted').textContent = settings.totalSorted.toLocaleString();
   renderLevelPicker();
@@ -720,6 +763,23 @@ function renderLevelPicker() {
 $('optAuto').addEventListener('change', (e) => { settings.autoLevel = e.target.checked; winsAtLevel = 0; saveSettings(); });
 $('optSound').addEventListener('change', (e) => { settings.sound = e.target.checked; saveSettings(); });
 $('optVoice').addEventListener('change', (e) => { settings.voice = e.target.checked; saveSettings(); });
+
+// Voice picker: "Best available" follows whatever scores highest, so a newly downloaded voice is used automatically.
+const voiceSel = $('optVoiceName');
+
+function renderVoicePicker() {
+  const best = voices[0];
+  voiceSel.replaceChildren(new Option(best ? `Best available (${best.name})` : 'Best available', ''));
+  for (const v of voices) voiceSel.add(new Option(voiceLabel(v), v.voiceURI));
+  voiceSel.value = voices.some((v) => v.voiceURI === settings.voiceURI) ? settings.voiceURI : '';
+}
+
+voiceSel.addEventListener('change', () => {
+  settings.voiceURI = voiceSel.value;
+  saveSettings();
+  say('Hi! I am your new voice.', true);
+});
+$('testVoice').addEventListener('click', () => say('Blue star! Great job!', true));
 $('newRound').addEventListener('click', newRound);
 $('resume').addEventListener('click', () => { initAudio(); parentEl.hidden = true; lastTouch = nowSec(); });
 $('version').textContent = 'Version ' + APP_VERSION;
@@ -768,6 +828,7 @@ $('resetCount').addEventListener('click', () => {
 
 // ---------- Boot ----------
 
+loadVoices();
 window.addEventListener('resize', resize);
 newRound();
 resize();
