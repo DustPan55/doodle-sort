@@ -1,0 +1,247 @@
+:root {
+  --bg: #FFF8EC;
+  --ink: #2B2440;
+  --muted: #6B6480;
+  --card: #FFFFFF;
+  --accent: #3A86FF;
+  --accent-edge: #2563c9;
+  --bar: rgba(255, 255, 255, 0.75);
+  --scrim: rgba(255, 248, 236, 0.55);
+  --shadow: rgba(43, 36, 64, 0.15);
+  --btn: #F7F5FB;
+  --btn-edge: #E6E1F0;
+  --line: #EEE9F5;
+  --dot-edge: #FFFFFF;
+  --font: ui-rounded, "SF Pro Rounded", "Nunito", system-ui, -apple-system, sans-serif;
+  color-scheme: light;
+}
+
+/* Dark theme: the phone's setting (until JS picks), or forced from the grown-up menu.
+   Canvas colors for each theme are in THEMES in app.js. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #17142A;
+    --ink: #F1EEFA;
+    --muted: #A7A0BD;
+    --card: #24203D;
+    --accent: #4A90FF;
+    --accent-edge: #2B63C2;
+    --bar: rgba(36, 32, 61, 0.8);
+    --scrim: rgba(23, 20, 42, 0.6);
+    --shadow: rgba(0, 0, 0, 0.45);
+    --btn: #2E2949;
+    --btn-edge: #3D3760;
+    --line: #353052;
+    --dot-edge: #3D3760;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #17142A;
+  --ink: #F1EEFA;
+  --muted: #A7A0BD;
+  --card: #24203D;
+  --accent: #4A90FF;
+  --accent-edge: #2B63C2;
+  --bar: rgba(36, 32, 61, 0.8);
+  --scrim: rgba(23, 20, 42, 0.6);
+  --shadow: rgba(0, 0, 0, 0.45);
+  --btn: #2E2949;
+  --btn-edge: #3D3760;
+  --line: #353052;
+  --dot-edge: #3D3760;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  /* No page scroll, zoom, text selection or long-press menus */
+  touch-action: none;
+  overscroll-behavior: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body { position: fixed; inset: 0; }
+
+#stage {
+  position: absolute;
+  inset: 0;
+  display: block;
+  touch-action: none;
+}
+
+/* Press-and-hold grown-up button */
+#hold {
+  position: absolute;
+  top: calc(env(safe-area-inset-top, 0px) + 10px);
+  right: calc(env(safe-area-inset-right, 0px) + 10px);
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  opacity: 0.45;
+  touch-action: none;
+}
+#hold.holding { opacity: 1; }
+#hold svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+#hold .track { fill: var(--bar); stroke: var(--shadow); stroke-width: 3; }
+#hold .ring {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 120;
+  stroke-dashoffset: 120;
+}
+#hold.holding .ring { stroke-dashoffset: 0; transition: stroke-dashoffset 1.5s linear; }
+#hold .lock {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2.2;
+  stroke-linejoin: round;
+  transform: rotate(90deg);
+  transform-origin: 22px 22px;
+}
+
+/* Overlays */
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(env(safe-area-inset-top, 0px) + 16px) 16px calc(env(safe-area-inset-bottom, 0px) + 16px);
+  background: var(--scrim);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  overflow-y: auto;
+  touch-action: pan-y;
+}
+.overlay[hidden] { display: none; }
+
+.card {
+  width: 100%;
+  max-width: 440px;
+  margin: auto;
+  background: var(--card);
+  border-radius: 28px;
+  padding: 24px 22px;
+  box-shadow: 0 12px 40px var(--shadow);
+  text-align: center;
+}
+
+.logo { font-size: 44px; margin: 4px 0 18px; letter-spacing: 1px; line-height: 1.1; }
+.logo span:nth-child(7n+1) { color: #FF4D4D; }
+.logo span:nth-child(7n+2) { color: #FF9F1C; }
+.logo span:nth-child(7n+3) { color: #E0B800; }
+.logo span:nth-child(7n+4) { color: #2EC27E; }
+.logo span:nth-child(7n+5) { color: #3A86FF; }
+.logo span:nth-child(7n+6) { color: #9B5DE5; }
+.logo span:nth-child(7n+7) { color: #FF6FB5; }
+
+h2 { margin: 0 0 12px; }
+
+button { font-family: inherit; color: inherit; cursor: pointer; }
+
+.big {
+  display: block;
+  width: 100%;
+  font-size: 26px;
+  font-weight: 700;
+  padding: 18px;
+  border: 0;
+  border-radius: 20px;
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 6px 0 var(--accent-edge);
+  margin: 8px 0 16px;
+}
+.big:active { transform: translateY(3px); box-shadow: 0 3px 0 var(--accent-edge); }
+
+.buttons { display: flex; gap: 8px; margin: 14px 0 6px; }
+.buttons button {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 10px 6px;
+  border-radius: 14px;
+  border: 2px solid var(--btn-edge);
+  background: var(--btn);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 4px;
+  border-bottom: 1px solid var(--line);
+  font-size: 17px;
+}
+.row input { width: 22px; height: 22px; accent-color: var(--accent); }
+
+details { text-align: left; margin: 12px 0 4px; font-size: 15px; line-height: 1.45; }
+summary { font-weight: 700; padding: 8px 0; color: var(--accent); }
+ol { padding-left: 20px; margin: 6px 0; }
+li { margin-bottom: 8px; }
+.tip { font-size: 14px; color: var(--muted); line-height: 1.4; margin: 8px 0; }
+
+/* Auto / Light / Dark switch */
+.segmented { display: flex; background: var(--btn); border: 2px solid var(--btn-edge); border-radius: 12px; padding: 2px; }
+.segmented button { border: 0; background: none; font-size: 15px; font-weight: 600; padding: 6px 12px; border-radius: 9px; }
+.segmented button.on { background: var(--accent); color: #fff; }
+
+.version { margin: 0; font-size: 13px; }
+
+/* Sorted counter (top-left). Touches pass through it to the canvas. */
+#counter {
+  position: absolute;
+  top: calc(env(safe-area-inset-top, 0px) + 10px);
+  left: calc(env(safe-area-inset-left, 0px) + 12px);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px 6px 8px;
+  background: var(--bar);
+  border-radius: 999px;
+  box-shadow: 0 4px 18px var(--shadow);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  font-size: 26px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+#counter svg { width: 30px; height: 30px; fill: #FFD60A; stroke: #C9A300; stroke-width: 1.5; stroke-linejoin: round; }
+#counter.bump { animation: bump 0.35s ease; }
+@keyframes bump {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.3) rotate(-4deg); }
+  100% { transform: scale(1); }
+}
+
+/* Probe for the iPhone safe-area insets, read by app.js for the layout */
+#safe {
+  position: fixed;
+  inset: 0;
+  visibility: hidden;
+  pointer-events: none;
+  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+}
+
+/* Level picker */
+.field { padding: 10px 4px 12px; border-bottom: 1px solid var(--line); text-align: left; }
+.fieldHead { display: flex; justify-content: space-between; align-items: baseline; font-size: 17px; margin-bottom: 8px; }
+.fieldHead .tip { margin: 0; }
+.levels { justify-content: space-between; }
+.levels button { flex: 1; font-size: 18px; padding: 8px 0; }

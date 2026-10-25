@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>Doodle Sort</title>
+  <meta name="description" content="A shape-sorter toy for little kids.">
+  <meta name="theme-color" content="#FFF8EC">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Doodle Sort">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <link rel="icon" type="image/png" href="icons/icon-192.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <canvas id="stage"></canvas>
+  <div id="safe" aria-hidden="true"></div>
+
+  <div id="counter" aria-live="polite">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.8-4.9 4.5 1.3 6.5L12 17l-5.9 3.3 1.3-6.5-4.9-4.5 6.6-.8z"/></svg>
+    <span id="sortCount">0</span>
+  </div>
+
+  <!-- Grown-up menu: press and hold so a tap from a kid doesn't open it -->
+  <button id="hold" aria-label="Grown-ups: press and hold">
+    <svg viewBox="0 0 44 44" aria-hidden="true">
+      <circle class="track" cx="22" cy="22" r="19"/>
+      <circle class="ring" cx="22" cy="22" r="19"/>
+      <path class="lock" d="M16 21v-3a6 6 0 0 1 12 0v3M14.5 21h15v10h-15z"/>
+    </svg>
+  </button>
+
+  <section id="start" class="overlay">
+    <div class="card">
+      <h1 class="logo"><span>D</span><span>o</span><span>o</span><span>d</span><span>l</span><span>e</span> <span>S</span><span>o</span><span>r</span><span>t</span></h1>
+      <button id="play" class="big">Play ▶</button>
+      <p id="startLevel" class="tip"></p>
+      <p id="installTip" class="tip" hidden>
+        Tip: tap <b>Share</b> → <b>Add to Home Screen</b> so it opens full screen, with no address bar.
+      </p>
+      <details id="lockDetails">
+        <summary>Grown-ups: lock the phone to this app</summary>
+        <div class="lockHelp"></div>
+      </details>
+    </div>
+  </section>
+
+  <section id="parent" class="overlay" hidden>
+    <div class="card">
+      <h2>Grown-ups</h2>
+      <div class="field">
+        <div class="fieldHead"><span>Level</span><span id="levelLabel" class="tip"></span></div>
+        <div id="optLevel" class="segmented levels" role="group" aria-label="Level"></div>
+      </div>
+      <label class="row"><span>Level up by itself after 3 wins</span><input type="checkbox" id="optAuto"></label>
+      <label class="row"><span>Sounds</span><input type="checkbox" id="optSound"></label>
+      <label class="row"><span>Say shape names</span><input type="checkbox" id="optVoice"></label>
+      <div class="row">
+        <span>Theme</span>
+        <div id="optTheme" class="segmented" role="group" aria-label="Theme">
+          <button data-theme="auto">Auto</button>
+          <button data-theme="light">Light</button>
+          <button data-theme="dark">Dark</button>
+        </div>
+      </div>
+      <div class="row"><span>Shapes sorted, all time</span><b id="totalSorted">0</b></div>
+      <div class="buttons">
+        <button id="newRound">New shapes</button>
+        <button id="resetCount">Reset counter</button>
+      </div>
+      <p class="tip">No sound? Check that the silent switch is off.</p>
+      <details>
+        <summary>How to lock the phone to this app</summary>
+        <div class="lockHelp"></div>
+      </details>
+      <button id="resume" class="big">Back to playing</button>
+      <p id="version" class="tip version"></p>
+    </div>
+  </section>
+
+  <template id="lockHelpTpl">
+    <ol>
+      <li><b>One-time setup:</b> open <b>Settings → Accessibility → Guided Access</b> and turn it on. Under <b>Passcode Settings</b>, set a passcode and turn on Face ID.</li>
+      <li><b>Each time:</b> open Doodle Sort, <b>triple-click the side button</b> (or the Home button on older iPhones), then tap <b>Start</b>.</li>
+      <li><b>To get out:</b> triple-click the side button and enter your passcode, then tap <b>End</b>. With Face ID turned on, you can double-click the side button instead.</li>
+    </ol>
+    <p class="tip">While Guided Access is on, your child can't swipe home, open other apps, or pull down notifications.</p>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>
